@@ -174,8 +174,7 @@ constructor(address registration) public {
 
 function updateAircraftemissionStandards (string memory fuel_grade,
                                             string memory emission_factor,
-                                            string memory Economy_class_cabin_factor, string memory Prem_economy_class_cabin_factor, 
-                                            string memory Business_class_cabin_factor, string memory First_class_cabin_factor) public onlyIATA {
+                                            string memory Economy_class_cabin_factor, string memory Prem_economy_class_cabin_factor,string memory Business_class_cabin_factor, string memory First_class_cabin_factor) public onlyIATA {
         
 
 
