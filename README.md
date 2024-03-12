@@ -8,7 +8,7 @@ contract Registration {
     
     mapping(address => bool) public Airline_Company; //0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
     mapping(address => bool) public IATA; //0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
-    mapping(address=> bool) public Electricity_Producer; //0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
+    mapping(address=> bool) public Utility_Provider; //0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
     mapping(address => bool) public Airport_Authority; // 0x617F2E2fD72FD9D5503197092aC168c91465E7f2
     mapping(address => bool) public Aviation_Fuel_Transporter; //0x17F6AD8Ef982297579C203069C1DbfFE4348c372
     mapping(address => bool) public Carbon_offset_provider; //0x5c6B0f7Bf3E7ce046039Bd8FABdfD3f9F5021678
@@ -38,9 +38,9 @@ contract Registration {
         IATA[i] = true;
     }
 
-    function registerElectricity_Producer(address p) external onlyEPA {
-        require(!Electricity_Producer[p], "Electricity_Producer exists already");
-        Electricity_Producer[p] = true;
+    function registerUtility_Provider(address p) external onlyEPA {
+        require(!Utility_Provider[p], "Electricity_Producer exists already");
+        Utility_Provider[p] = true;
     }
     
     function registerAirport_Authority(address u) external onlyEPA {
@@ -70,8 +70,8 @@ contract Registration {
         return IATA[i];
     }
     
-    function Electricity_ProducerExists(address p) public view returns(bool) {
-        return Electricity_Producer[p];
+    function Utility_ProviderExists(address p) public view returns(bool) {
+        return Utility_Provider[p];
     }
 
     function Airport_AuthorityExists(address u) public view returns(bool) {
@@ -174,7 +174,8 @@ constructor(address registration) public {
 
 function updateAircraftemissionStandards (string memory fuel_grade,
                                             string memory emission_factor,
-                                            string memory Economy_class_cabin_factor, string memory Prem_economy_class_cabin_factor,string memory Business_class_cabin_factor, string memory First_class_cabin_factor) public onlyIATA {
+                                            string memory Economy_class_cabin_factor, string memory Prem_economy_class_cabin_factor, 
+                                            string memory Business_class_cabin_factor, string memory First_class_cabin_factor) public onlyIATA {
         
 
 
@@ -211,7 +212,7 @@ emit FuelLevelsUpdated (fuelBeginning_in_Kg, fuelEnding_in_Kg, fuel_Consumed_in_
 
 // Calculate Scope 1 carbon emission
 
-event Scope1CarbonEmissionsCalculated(uint256 fuel_Consumed_in_Kg, uint256 totalWeight_in_KG,uint256 total_passenger_FuelBurn_in_Kg,
+event Scope1CarbonEmissionCalculated(uint256 fuel_Consumed_in_Kg, uint256 totalWeight_in_KG,uint256 total_passenger_FuelBurn_in_Kg,
                  uint256 Fuel_Burn_per_Economy_Class_Pax_kg, uint256 Fuel_Burn_per_Premium_Economy_Class_Pax_kg,
                  uint256 Fuel_Burn_per_Business_Class_Pax_kg, uint256 Fuel_Burn_per_First_Class_Pax_kg,
                 uint256 Co2_emitted_per_passenger_Economy_class, uint256 Co2_emitted_per_passenger_Premium_Economy_class,
@@ -220,7 +221,7 @@ event Scope1CarbonEmissionsCalculated(uint256 fuel_Consumed_in_Kg, uint256 total
  
 
    
-    function calculateScope1CarbonEmissions(
+    function calculateScope1CarbonEmission(
         address receiver_EPA,
         address receiver_IATA,
         uint256 fuelBeginning_in_Kg,
@@ -284,7 +285,7 @@ event Scope1CarbonEmissionsCalculated(uint256 fuel_Consumed_in_Kg, uint256 total
 
 
 
-emit Scope1CarbonEmissionsCalculated (fuel_Consumed_in_Kg,  totalWeight_in_Kg, total_passenger_FuelBurn_in_Kg,
+emit Scope1CarbonEmissionCalculated (fuel_Consumed_in_Kg,  totalWeight_in_Kg, total_passenger_FuelBurn_in_Kg,
                    Fuel_Burn_per_Economy_Class_Pax_kg,Fuel_Burn_per_Premium_Economy_Class_Pax_kg,
                   Fuel_Burn_per_Business_Class_Pax_kg,  Fuel_Burn_per_First_Class_Pax_kg,
                  Co2_emitted_per_passenger_Economy_class, Co2_emitted_per_passenger_Premium_Economy_class,Co2_emitted_per_passenger_Business_class,
@@ -331,7 +332,7 @@ event Scope1EmissionPenaltyUpdated (uint256 totalCo2Emitted_in_kg,uint256 Thresh
 }
 
 contract Scope2CarbonEmission{
-    address payable public Electricity_Producer;
+    address payable public Utility_Provider;
     Registration public registrationContract;
     uint256 public Total_Carbon_cost;
     bool Penalty;
@@ -342,27 +343,27 @@ contract Scope2CarbonEmission{
         
         registrationContract = Registration(registration);
 
-        require(registrationContract.Electricity_ProducerExists(msg.sender), "Sender not authorized");
-        Electricity_Producer = payable(msg.sender);
+        require(registrationContract.Utility_ProviderExists(msg.sender), "Sender not authorized");
+        Utility_Provider = payable(msg.sender);
     }
     modifier onlyElectricity_Producer {
-        require(registrationContract.Electricity_ProducerExists(msg.sender), "Sender not authorized");
+        require(registrationContract.Utility_ProviderExists(msg.sender), "Sender not authorized");
         _;
     }
 
-    event Scope2CarbonEmisisonDetailsUpdated(address EPA, uint256 Electricty_supplied_in_Kwh, uint256 Total_Co2_emitted_in_Kg, string Fuel_used_for_electricity_production);
+    event Scope2CarbonEmisisonUpdated(address EPA, uint256 Electricty_supplied_in_Kwh, uint256 Total_Co2_emitted_in_Kg, string Fuel_used_for_electricity_production);
     function updateScope2CarbonEmisisonDetails (address EPA, uint256 Electricity_supplied_in_Kwh, string memory Fuel_used_for_electricity_production,
     uint256 Total_Co2_emitted_in_Kg) public onlyElectricity_Producer{
 
-    emit Scope2CarbonEmisisonDetailsUpdated(EPA,Electricity_supplied_in_Kwh,Total_Co2_emitted_in_Kg,Fuel_used_for_electricity_production);
+    emit Scope2CarbonEmisisonUpdated(EPA,Electricity_supplied_in_Kwh,Total_Co2_emitted_in_Kg,Fuel_used_for_electricity_production);
     }
 
-    event CarbonCostForScope2EmisisonCalculated(address EPA, uint256 Total_Co2_emitted_in_Kg, uint256 Total_Carbon_cost,uint256 Carbon_Cost_for_Scope2Emission_in_TCO2);
-    function CalculateCarbonCostForScope2Emission (address EPA,uint256 Total_Co2_emitted_in_Kg, uint256 Carbon_Cost_for_Scope2Emission_in_TCO2) public onlyElectricity_Producer{
+    event Scope2CarbonEmisisonCostCalculated(address EPA, uint256 Total_Co2_emitted_in_Kg, uint256 Total_Carbon_cost,uint256 Carbon_Cost_for_Scope2Emission_in_TCO2);
+    function CalculateScope2EmissionCarbonCost (address EPA,uint256 Total_Co2_emitted_in_Kg, uint256 Carbon_Cost_for_Scope2Emission_in_TCO2) public onlyElectricity_Producer{
 
         Total_Carbon_cost = ((Total_Co2_emitted_in_Kg) * (Carbon_Cost_for_Scope2Emission_in_TCO2))/1000;
 
-    emit CarbonCostForScope2EmisisonCalculated(EPA,Total_Co2_emitted_in_Kg,Total_Carbon_cost,Carbon_Cost_for_Scope2Emission_in_TCO2);
+    emit Scope2CarbonEmisisonCostCalculated(EPA,Total_Co2_emitted_in_Kg,Total_Carbon_cost,Carbon_Cost_for_Scope2Emission_in_TCO2);
     }
 
 event Scope2EmissionPenaltyUpdated (uint256 totalScope2Co2Emitted_in_kg,uint256 ThresholdScope2CO2emission, bool PenaltyStatus);
@@ -405,34 +406,34 @@ contract Scope3CarbonEmission{
         _;
     }
 
-    event AirportScope3CarbonEmissionUpdated(address EPA, uint256 Total_CO2_emitted_from_Airport_facilities_in_Kg, string Activity_1, string Activity_2,
+    event AirportScope3EmissionUpdated(address EPA, uint256 Total_CO2_emitted_from_Airport_facilities_in_Kg, string Activity_1, string Activity_2,
     string Activity_3);
-    function updateAirportScope3CarbonEmission (address EPA, uint256 Total_CO2_emitted_from_Airport_facilities_in_Kg, string memory Activity_1, string memory Activity_2,
+    function updateAirportScope3Emission (address EPA, uint256 Total_CO2_emitted_from_Airport_facilities_in_Kg, string memory Activity_1, string memory Activity_2,
     string memory Activity_3)
      public onlyAirport_Authority{
 
-    emit AirportScope3CarbonEmissionUpdated(EPA, Total_CO2_emitted_from_Airport_facilities_in_Kg, Activity_1,Activity_2,Activity_3 );
+    emit AirportScope3EmissionUpdated(EPA, Total_CO2_emitted_from_Airport_facilities_in_Kg, Activity_1,Activity_2,Activity_3 );
     }
 
-    event Scope3CarbonCostFromAirportFacilitiesCalculated (address EPA, uint256 Total_CO2_emitted_from_Airport_facilities_in_Kg, uint256 Total_Carbon_cost,uint256 Carbon_Cost_for_AirportEmission_in_TCO2);
-    function CalculateScope3CarbonCostFromAirportFacilities(address EPA, uint256 Total_CO2_emitted_from_Airport_facilities_in_Kg, uint256 Carbon_Cost_for_AirportEmission_in_TCO2) public onlyAirport_Authority{
+    event AirportScope3CarbonCostCalculated (address EPA, uint256 Total_CO2_emitted_from_Airport_facilities_in_Kg, uint256 Total_Carbon_cost,uint256 Carbon_Cost_for_AirportEmission_in_TCO2);
+    function CalculateAirportScope3CarbonCost(address EPA, uint256 Total_CO2_emitted_from_Airport_facilities_in_Kg, uint256 Carbon_Cost_for_AirportEmission_in_TCO2) public onlyAirport_Authority{
 
         Total_Carbon_cost = ((Total_CO2_emitted_from_Airport_facilities_in_Kg) * (Carbon_Cost_for_AirportEmission_in_TCO2))/1000 + 1;
-    emit Scope3CarbonCostFromAirportFacilitiesCalculated (EPA, Total_CO2_emitted_from_Airport_facilities_in_Kg,  Total_Carbon_cost, Carbon_Cost_for_AirportEmission_in_TCO2);
+    emit AirportScope3CarbonCostCalculated (EPA, Total_CO2_emitted_from_Airport_facilities_in_Kg,  Total_Carbon_cost, Carbon_Cost_for_AirportEmission_in_TCO2);
     }
 
-    event FuelStorageandTransportationScope3CarbonEmisisonUpdated(address EPA, string Fuel_Type, uint256 amount_of_fuel_supplied, uint256 Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg);
-    function updateFuelStorageandTransportationScope3CarbonEmisison(address EPA, string memory Fuel_Type, uint256 amount_of_fuel_supplied, uint256 Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg) public onlyAviation_Fuel_Transporter{
+    event FuelTransportationScope3EmisisonUpdated(address EPA, string Fuel_Type, uint256 amount_of_fuel_supplied, uint256 Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg);
+    function updateFuelTransportationScope3Emisison(address EPA, string memory Fuel_Type, uint256 amount_of_fuel_supplied, uint256 Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg) public onlyAviation_Fuel_Transporter{
     
-    emit FuelStorageandTransportationScope3CarbonEmisisonUpdated(EPA, Fuel_Type, amount_of_fuel_supplied,Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg);
+    emit FuelTransportationScope3EmisisonUpdated(EPA, Fuel_Type, amount_of_fuel_supplied,Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg);
     }
-    event Scope3CarbonCostFromFuelStorageandTransportationCalculated(address EPA, uint256 Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg, uint256 Carbon_Cost_for_Fuel_TransportationandStoragetEmission_in_TCO2, uint256 Total_Carbon_cost);
-    function calculateScope3CarbonCostFromFuelStorageandTransportation(address EPA, uint256 Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg, 
+    event FuelTransportationScope3CarbonCostCalculated(address EPA, uint256 Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg, uint256 Carbon_Cost_for_Fuel_TransportationandStoragetEmission_in_TCO2, uint256 Total_Carbon_cost);
+    function calculateFuelTransportationCarbonCost(address EPA, uint256 Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg, 
     uint256 Carbon_Cost_for_Fuel_TransportationandStoragetEmission_in_TCO2) public onlyAviation_Fuel_Transporter{
 
         Total_Carbon_cost = ((Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg) * (Carbon_Cost_for_Fuel_TransportationandStoragetEmission_in_TCO2))/1000 + 1;
 
-    emit Scope3CarbonCostFromFuelStorageandTransportationCalculated (EPA, Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg,Carbon_Cost_for_Fuel_TransportationandStoragetEmission_in_TCO2,Total_Carbon_cost);
+    emit FuelTransportationScope3CarbonCostCalculated (EPA, Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg,Carbon_Cost_for_Fuel_TransportationandStoragetEmission_in_TCO2,Total_Carbon_cost);
     }      
     
 event Scope3EmissionPenaltyUpdated (uint256 total_Airport_Facility_Scope3_Co2Emitted_in_kg, uint256 total_Fuel_Storageandtransportation_Scope3_Co2Emitted_in_kg, uint256 Threshold_Airport_Facility_Scope3_CO2emission, uint256 Threshold_Fuel_TransportationandStorage_Scope3_CO2emission, bool PenaltyStatus);
@@ -511,3 +512,4 @@ function updateCarbonOffsetandCreditStatus (
 
 
 }
+
