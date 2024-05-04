@@ -4,8 +4,6 @@ pragma solidity = 0.6.0;
 
 contract Registration {
     address public EPA;  // 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
-    
-    
     mapping(address => bool) public Airline_Company; //0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
     mapping(address => bool) public IATA; //0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
     mapping(address=> bool) public Utility_Provider; //0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
@@ -105,7 +103,6 @@ contract Scope1CarbonEmission{
     uint256 public total_number_of_passenegers_business_class;
     uint256 public total_number_of_passenegers_first_class;
     uint256 public total_number_of_passengers;
-    
     uint256 public total_passenger_FuelBurn_in_Kg;
     uint256 public Fuel_Burn_per_Economy_Class_Pax_kg;
     uint256 public Fuel_Burn_per_business_Class_Pax_kg;
@@ -121,8 +118,6 @@ contract Scope1CarbonEmission{
     uint256 public Carbon_cost_per_passeneger_business_class;
     uint256 public Carbon_cost_per_passeneger_first_class;
     uint256 public Denom;
-
-    //
     uint256 public Fuel_Burn_per_Economy_Class_Pax_kg_NM;
     uint256 public Fuel_Burn_per_Economy_Class_Pax_kg_D1;
     uint256 public Fuel_Burn_per_Pre_Economy_Class_Pax_kg_D2;
@@ -131,26 +126,20 @@ contract Scope1CarbonEmission{
     uint256 public Fuel_Burn_per_Economy_Class_Pax_kg_DF;
     uint256 public Co2_emitted_per_passenger_Economy_class;
     uint256 public Co2_emitted_per_passenger_Economy_Class;
-    //
     uint256 public Fuel_Burn_per_Premium_Economy_Class_Pax_kg_NM;
     uint256 public Fuel_Burn_per_Premium_Economy_Class_Pax_kg;
     uint256 public Co2_emitted_per_passenger_Premium_Economy_class; 
     uint256 public Co2_emitted_per_passenger_Premium_Economy_Class; 
-
-    //
     uint256 public Fuel_Burn_per_Business_Class_Pax_kg_NM;
     uint256 public Fuel_Burn_per_Business_Class_Pax_kg;
     uint256 public Co2_emitted_per_passenger_Business_class;
     uint256 public Co2_emitted_per_passenger_Business_Class;
-    //
     uint256 public Fuel_Burn_per_First_Class_Pax_kg_NM;
     uint256 public Fuel_Burn_per_First_Class_Pax_kg;
     uint256 public Co2_emitted_per_passenger_First_class;
     uint256 public Co2_emitted_per_passenger_First_Class;
     bool public Penalty;
-    
     Registration public registrationContract;
-
     
 // Update aircraft emission standards
 event aircraftEmissionStandardsUpdated (string fuel_grade,string emission_factor,  string Economy_class_cabin_factor, string  Prem_economy_class_cabin_factor, string  Business_class_cabin_factor, string  First_class_cabin_factor);
@@ -176,9 +165,6 @@ function updateAircraftemissionStandards (string memory fuel_grade,
                                             string memory emission_factor,
                                             string memory Economy_class_cabin_factor, string memory Prem_economy_class_cabin_factor, 
                                             string memory Business_class_cabin_factor, string memory First_class_cabin_factor) public onlyIATA {
-        
-
-
 emit aircraftEmissionStandardsUpdated (fuel_grade, emission_factor,Economy_class_cabin_factor,  Prem_economy_class_cabin_factor,   Business_class_cabin_factor,  First_class_cabin_factor);
 
 }
