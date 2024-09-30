@@ -3,6 +3,7 @@
 pragma solidity = 0.6.0;
 
 contract Registration {
+
     address public EPA;  // 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
     mapping(address => bool) public Airline_Company; //0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
     mapping(address => bool) public IATA; //0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
@@ -88,6 +89,7 @@ contract Registration {
 }
 
 contract Scope1CarbonEmission{
+
     uint256 public fuel_Consumed_in_Kg;
     uint256 public totalWeight_in_Kg;
     uint256 public totalFuelBurn_in_Kg;
@@ -141,90 +143,90 @@ contract Scope1CarbonEmission{
     bool public Penalty;
     Registration public registrationContract;
     
-// Update aircraft emission standards
-event aircraftEmissionStandardsUpdated (string fuel_grade,string emission_factor,  string Economy_class_cabin_factor, string  Prem_economy_class_cabin_factor, string  Business_class_cabin_factor, string  First_class_cabin_factor);
 
-constructor(address registration) public {
-        registrationContract = Registration(registration);
-        
-        require(registrationContract.Airline_CompanyExists(msg.sender), "Sender not authorized");
-        airlineCompany = payable(msg.sender);
-    }
-
-    modifier onlyAirlineIndustry {
-        require(registrationContract.Airline_CompanyExists(msg.sender), "Sender not authorized");
-        _;
-    }
-
-    modifier onlyIATA {
-        require(registrationContract.IATAExists(msg.sender), "Sender not authorized");
-        _;
-    }
-
-function updateAircraftemissionStandards (string memory fuel_grade,
-                                            string memory emission_factor,
-                                            string memory Economy_class_cabin_factor, string memory Prem_economy_class_cabin_factor, 
-                                            string memory Business_class_cabin_factor, string memory First_class_cabin_factor) public onlyIATA {
-emit aircraftEmissionStandardsUpdated (fuel_grade, emission_factor,Economy_class_cabin_factor,  Prem_economy_class_cabin_factor,   Business_class_cabin_factor,  First_class_cabin_factor);
-
-}
-
-// Update Passenger information
-event PassengerDetailsUpdated (uint256  total_number_of_passenegers_Economy_class, uint256  total_number_of_passenegers_Premium_economy_class, uint256  total_number_of_passenegers_Business_class, uint256 total_number_of_passenegers_First_class, uint256 total_number_of_Passengers,  uint256 total_Passenger_Weight_in_KG, uint256 total_cargoWeight_in_Kg, uint256 totalWeight_in_KG );
-
-function updatePassengerDetails (uint256 total_number_of_passenegers_Economy_class,  uint256 total_number_of_passenegers_Premium_economy_class, uint256 total_number_of_passenegers_Business_class, uint256 total_number_of_passenegers_First_class, uint256 total_Passenger_Weight_in_KG, uint256 total_cargoWeight_in_Kg ) external onlyAirlineIndustry {
-
-uint256 total_number_of_Passengers = uint256 (total_number_of_passenegers_economy_class) +  uint256 (total_number_of_passenegers_premium_economy_class) +
-                                     uint256 (total_number_of_passenegers_business_class) + uint256 (total_number_of_passenegers_first_class);
-uint256 totalWeight_in_KG = (uint256 (total_Passenger_Weight_in_KG) + uint256 (total_cargoWeight_in_Kg));
-
-emit PassengerDetailsUpdated (total_number_of_passenegers_Economy_class, total_number_of_passenegers_Premium_economy_class, total_number_of_passenegers_Business_class, total_number_of_passenegers_First_class, total_number_of_Passengers, total_Passenger_Weight_in_KG, total_cargoWeight_in_Kg, totalWeight_in_KG);
-}
-
-// Update Fuel levels
-
-event FuelLevelsUpdated ( uint256 fuelBeginning_in_Kg, uint256  fuelEnding_in_Kg,  uint256 fuel_Consumed_in_Kg);
-
-function updateFuelLevels ( uint256 fuelBeginning_in_Kg, uint256 fuelEnding_in_Kg) external onlyAirlineIndustry {
+	event aircraftEmissionStandardsUpdated (string fuel_grade,string emission_factor,  string Economy_class_cabin_factor, string  Prem_economy_class_cabin_factor, 		string  Business_class_cabin_factor, string  First_class_cabin_factor);
 	
-require(fuelBeginning_in_Kg >= fuelEnding_in_Kg, "Initial fuel should be greater than or equal to final fuel");
+	constructor(address registration) public {
+	        registrationContract = Registration(registration);
+	        
+	        require(registrationContract.Airline_CompanyExists(msg.sender), "Sender not authorized");
+	        airlineCompany = payable(msg.sender);
+	    }
 	
-fuel_Consumed_in_Kg = (fuelBeginning_in_Kg - fuelEnding_in_Kg);
-
-emit FuelLevelsUpdated (fuelBeginning_in_Kg, fuelEnding_in_Kg, fuel_Consumed_in_Kg);
-
-
-}
-
-// Calculate Scope 1 carbon emission
-
-event Scope1CarbonEmissionCalculated(uint256 fuel_Consumed_in_Kg, uint256 totalWeight_in_KG,uint256 total_passenger_FuelBurn_in_Kg,
-                 uint256 Fuel_Burn_per_Economy_Class_Pax_kg, uint256 Fuel_Burn_per_Premium_Economy_Class_Pax_kg,
-                 uint256 Fuel_Burn_per_Business_Class_Pax_kg, uint256 Fuel_Burn_per_First_Class_Pax_kg,
-                uint256 Co2_emitted_per_passenger_Economy_class, uint256 Co2_emitted_per_passenger_Premium_Economy_class,
-                uint256 Co2_emitted_per_passenger_Business_class, uint256 Co2_emitted_per_passenger_First_class,uint256 totalCo2Emitted_in_kg);
-
- 
-
-   
-    function calculateScope1CarbonEmission(
-        address receiver_EPA,
-        address receiver_IATA,
-        uint256 fuelBeginning_in_Kg,
-        uint256 fuelEnding_in_Kg,
-        uint256 total_Passenger_Weight_in_KG,
-        uint256 total_cargoWeight_in_Kg,
-        uint256 Total_number_of_passenegers_economy_class,
-        uint256 Total_number_of_passenegers_premium_economy_class,
-        uint256 Total_number_of_passenegers_business_class,
-        uint256 Total_number_of_passenegers_first_class
-       
-
-    )
-   
-    external onlyAirlineIndustry {
-        
-        require(registrationContract.isEPA(receiver_EPA), "EPA's address is not valid.");
+	    modifier onlyAirlineIndustry {
+	        require(registrationContract.Airline_CompanyExists(msg.sender), "Sender not authorized");
+	        _;
+	    }
+	
+	    modifier onlyIATA {
+	        require(registrationContract.IATAExists(msg.sender), "Sender not authorized");
+	        _;
+	    }
+	
+	function updateAircraftemissionStandards (string memory fuel_grade,
+	                                            string memory emission_factor,
+	                                            string memory Economy_class_cabin_factor, string memory Prem_economy_class_cabin_factor, 
+	                                            string memory Business_class_cabin_factor, string memory First_class_cabin_factor) public onlyIATA {
+	emit aircraftEmissionStandardsUpdated (fuel_grade, emission_factor,Economy_class_cabin_factor,  Prem_economy_class_cabin_factor,   Business_class_cabin_factor,  First_class_cabin_factor);
+	
+	}
+	
+	// Update Passenger information
+	event PassengerDetailsUpdated (uint256  total_number_of_passenegers_Economy_class, uint256  total_number_of_passenegers_Premium_economy_class, uint256  total_number_of_passenegers_Business_class, uint256 total_number_of_passenegers_First_class, uint256 total_number_of_Passengers,  uint256 total_Passenger_Weight_in_KG, uint256 total_cargoWeight_in_Kg, uint256 totalWeight_in_KG );
+	
+	function updatePassengerDetails (uint256 total_number_of_passenegers_Economy_class,  uint256 total_number_of_passenegers_Premium_economy_class, uint256 total_number_of_passenegers_Business_class, uint256 total_number_of_passenegers_First_class, uint256 total_Passenger_Weight_in_KG, uint256 total_cargoWeight_in_Kg ) external onlyAirlineIndustry {
+	
+	uint256 total_number_of_Passengers = uint256 (total_number_of_passenegers_economy_class) +  uint256 (total_number_of_passenegers_premium_economy_class) +
+	                                     uint256 (total_number_of_passenegers_business_class) + uint256 (total_number_of_passenegers_first_class);
+	uint256 totalWeight_in_KG = (uint256 (total_Passenger_Weight_in_KG) + uint256 (total_cargoWeight_in_Kg));
+	
+	emit PassengerDetailsUpdated (total_number_of_passenegers_Economy_class, total_number_of_passenegers_Premium_economy_class, total_number_of_passenegers_Business_class, total_number_of_passenegers_First_class, total_number_of_Passengers, total_Passenger_Weight_in_KG, total_cargoWeight_in_Kg, totalWeight_in_KG);
+	}
+	
+	// Update Fuel levels
+	
+	event FuelLevelsUpdated ( uint256 fuelBeginning_in_Kg, uint256  fuelEnding_in_Kg,  uint256 fuel_Consumed_in_Kg);
+	
+	function updateFuelLevels ( uint256 fuelBeginning_in_Kg, uint256 fuelEnding_in_Kg) external onlyAirlineIndustry {
+		
+	require(fuelBeginning_in_Kg >= fuelEnding_in_Kg, "Initial fuel should be greater than or equal to final fuel");
+		
+	fuel_Consumed_in_Kg = (fuelBeginning_in_Kg - fuelEnding_in_Kg);
+	
+	emit FuelLevelsUpdated (fuelBeginning_in_Kg, fuelEnding_in_Kg, fuel_Consumed_in_Kg);
+	
+	
+	}
+	
+	// Calculate Scope 1 carbon emission
+	
+	event Scope1CarbonEmissionCalculated(uint256 fuel_Consumed_in_Kg, uint256 totalWeight_in_KG,uint256 total_passenger_FuelBurn_in_Kg,
+	                 uint256 Fuel_Burn_per_Economy_Class_Pax_kg, uint256 Fuel_Burn_per_Premium_Economy_Class_Pax_kg,
+	                 uint256 Fuel_Burn_per_Business_Class_Pax_kg, uint256 Fuel_Burn_per_First_Class_Pax_kg,
+	                uint256 Co2_emitted_per_passenger_Economy_class, uint256 Co2_emitted_per_passenger_Premium_Economy_class,
+	                uint256 Co2_emitted_per_passenger_Business_class, uint256 Co2_emitted_per_passenger_First_class,uint256 totalCo2Emitted_in_kg);
+	
+	 
+	
+	   
+	    function calculateScope1CarbonEmission(
+	        address receiver_EPA,
+	        address receiver_IATA,
+	        uint256 fuelBeginning_in_Kg,
+	        uint256 fuelEnding_in_Kg,
+	        uint256 total_Passenger_Weight_in_KG,
+	        uint256 total_cargoWeight_in_Kg,
+	        uint256 Total_number_of_passenegers_economy_class,
+	        uint256 Total_number_of_passenegers_premium_economy_class,
+	        uint256 Total_number_of_passenegers_business_class,
+	        uint256 Total_number_of_passenegers_first_class
+	       
+	
+	    )
+	   
+	    external onlyAirlineIndustry {
+	        
+	        require(registrationContract.isEPA(receiver_EPA), "EPA's address is not valid.");
         require(registrationContract.IATAExists(receiver_IATA), "IATA address is not valid.");
         require(fuelBeginning_in_Kg >= fuelEnding_in_Kg, "Initial fuel should be greater than or equal to final fuel");
         
@@ -271,7 +273,7 @@ event Scope1CarbonEmissionCalculated(uint256 fuel_Consumed_in_Kg, uint256 totalW
 
 
 
-emit Scope1CarbonEmissionCalculated (fuel_Consumed_in_Kg,  totalWeight_in_Kg, total_passenger_FuelBurn_in_Kg,
+	emit Scope1CarbonEmissionCalculated (fuel_Consumed_in_Kg,  totalWeight_in_Kg, total_passenger_FuelBurn_in_Kg,
                    Fuel_Burn_per_Economy_Class_Pax_kg,Fuel_Burn_per_Premium_Economy_Class_Pax_kg,
                   Fuel_Burn_per_Business_Class_Pax_kg,  Fuel_Burn_per_First_Class_Pax_kg,
                  Co2_emitted_per_passenger_Economy_class, Co2_emitted_per_passenger_Premium_Economy_class,Co2_emitted_per_passenger_Business_class,
@@ -281,12 +283,12 @@ emit Scope1CarbonEmissionCalculated (fuel_Consumed_in_Kg,  totalWeight_in_Kg, to
 
 // Calculate Carbon cost
 
-event Scope1EmissionCarbonCostCalculated(address receiverEPA,uint256 TotalCo2Emitted_in_kg, uint256 Carbon_Cost_per_TCO2, uint256 Total_Carbon_cost, uint256 Carbon_cost_per_passeneger_Economy_class,
+	event Scope1EmissionCarbonCostCalculated(address receiverEPA,uint256 TotalCo2Emitted_in_kg, uint256 Carbon_Cost_per_TCO2, uint256 Total_Carbon_cost, uint256 		Carbon_cost_per_passeneger_Economy_class,
         uint256 Carbon_cost_per_passeneger_Premium_Economy_class,
         uint256 Carbon_cost_per_passeneger_business_class,
         uint256 Carbon_cost_per_passeneger_first_class);
 
-function calculateScope1EmissionCarbonCost (address receiverEPA,uint256 TotalCo2Emitted_in_kg, uint256 Carbon_Cost_per_TCO2,uint256 Total_no_of_passenegers_economy_class,
+	function calculateScope1EmissionCarbonCost (address receiverEPA,uint256 TotalCo2Emitted_in_kg, uint256 Carbon_Cost_per_TCO2,uint256 		Total_no_of_passenegers_economy_class,
         uint256 Total_no_of_passenegers_premium_economy_class,
         uint256 Total_no_of_passenegers_business_class,
         uint256 Total_no_of_passenegers_first_class ) public onlyAirlineIndustry{
