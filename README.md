@@ -320,12 +320,11 @@ contract Scope1CarbonEmission{
 }
 
 contract Scope2CarbonEmission{
+
     address payable public Utility_Provider;
     Registration public registrationContract;
     uint256 public Total_Carbon_cost;
     bool Penalty;
-   
-    
 
     constructor(address registration) public {
         
@@ -354,22 +353,23 @@ contract Scope2CarbonEmission{
     emit Scope2CarbonEmisisonCostCalculated(EPA,Total_Co2_emitted_in_Kg,Total_Carbon_cost,Carbon_Cost_for_Scope2Emission_in_TCO2);
     }
 
-event Scope2EmissionPenaltyUpdated (uint256 totalScope2Co2Emitted_in_kg,uint256 ThresholdScope2CO2emission, bool PenaltyStatus);
+	event Scope2EmissionPenaltyUpdated (uint256 totalScope2Co2Emitted_in_kg,uint256 ThresholdScope2CO2emission, bool PenaltyStatus);
     
-    function updateScope2EmissionPenalty(uint256 totalScope2Co2Emitted_in_kg, uint256 ThresholdScope2CO2emission) public {
+   	 function updateScope2EmissionPenalty(uint256 totalScope2Co2Emitted_in_kg, uint256 ThresholdScope2CO2emission) public {
         require (registrationContract.isEPA(msg.sender)==true,"only EPA can perform this.");
  
-    Penalty=false;
+    	Penalty=false;
         if(totalScope2Co2Emitted_in_kg > ThresholdScope2CO2emission)
          {
             Penalty=true;
         }
-    emit Scope2EmissionPenaltyUpdated (totalScope2Co2Emitted_in_kg, ThresholdScope2CO2emission, Penalty);
+    	emit Scope2EmissionPenaltyUpdated (totalScope2Co2Emitted_in_kg, ThresholdScope2CO2emission, Penalty);
     }
 
 }
 
 contract Scope3CarbonEmission{
+
     address payable public Airport_Authority;
     address payable public Aviation_Fuel_Transporter;
     Registration public registrationContract;
@@ -424,7 +424,7 @@ contract Scope3CarbonEmission{
     emit FuelTransportationScope3CarbonCostCalculated (EPA, Total_CO2_emitted_from_Fuel_TransportationandStorage_in_Kg,Carbon_Cost_for_Fuel_TransportationandStoragetEmission_in_TCO2,Total_Carbon_cost);
     }      
     
-event Scope3EmissionPenaltyUpdated (uint256 total_Airport_Facility_Scope3_Co2Emitted_in_kg, uint256 total_Fuel_Storageandtransportation_Scope3_Co2Emitted_in_kg, uint256 Threshold_Airport_Facility_Scope3_CO2emission, uint256 Threshold_Fuel_TransportationandStorage_Scope3_CO2emission, bool PenaltyStatus);
+	event Scope3EmissionPenaltyUpdated (uint256 total_Airport_Facility_Scope3_Co2Emitted_in_kg, uint256 total_Fuel_Storageandtransportation_Scope3_Co2Emitted_in_kg, uint256 Threshold_Airport_Facility_Scope3_CO2emission, uint256 Threshold_Fuel_TransportationandStorage_Scope3_CO2emission, bool PenaltyStatus);
     
     function updateScope3EmissionPenalty(uint256 total_Airport_Facility_Scope3_Co2Emitted_in_kg, uint256 total_Fuel_Storageandtransportation_Scope3_Co2Emitted_in_kg, uint256 Threshold_Airport_Facility_Scope3_CO2emission, uint256 Threshold_Fuel_TransportationandStorage_Scope3_CO2emission) public {
         require (registrationContract.isEPA(msg.sender)==true,"only EPA can perform this.");
@@ -444,6 +444,7 @@ event Scope3EmissionPenaltyUpdated (uint256 total_Airport_Facility_Scope3_Co2Emi
 }
 
 contract CarbonOffset {
+
     address payable Carbon_offset_provider;
     Registration public registrationContract;
     bool Offset_Required;
@@ -473,7 +474,7 @@ contract CarbonOffset {
     bool Carbon_CreditStatus
 );
 
-function updateCarbonOffsetandCreditStatus (
+	function updateCarbonOffsetandCreditStatus (
     uint256 Baseline_Carbon_Emissions,
     uint256 Actual_Carbon_Emission, string memory Carbon_offset_project) public onlyCarbon_offset_provider {
 
