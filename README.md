@@ -281,7 +281,7 @@ contract Scope1CarbonEmission{
 
 }
 
-// Calculate Carbon cost
+	// Calculate Carbon cost
 
 	event Scope1EmissionCarbonCostCalculated(address receiverEPA,uint256 TotalCo2Emitted_in_kg, uint256 Carbon_Cost_per_TCO2, uint256 Total_Carbon_cost, uint256 		Carbon_cost_per_passeneger_Economy_class,
         uint256 Carbon_cost_per_passeneger_Premium_Economy_class,
@@ -299,23 +299,23 @@ contract Scope1CarbonEmission{
         Carbon_cost_per_passeneger_business_class = ((Total_Carbon_cost) / ((Total_no_of_passenegers_business_class)));
         Carbon_cost_per_passeneger_first_class = ((Total_Carbon_cost) / ((Total_no_of_passenegers_first_class)));
 
-emit Scope1EmissionCarbonCostCalculated (receiverEPA, TotalCo2Emitted_in_kg,  Carbon_Cost_per_TCO2, Total_Carbon_cost, Carbon_cost_per_passeneger_Economy_class,
+	emit Scope1EmissionCarbonCostCalculated (receiverEPA, TotalCo2Emitted_in_kg,  Carbon_Cost_per_TCO2, Total_Carbon_cost, Carbon_cost_per_passeneger_Economy_class,
  Carbon_cost_per_passeneger_Premium_Economy_class,  Carbon_cost_per_passeneger_business_class,  Carbon_cost_per_passeneger_first_class);
 
 }
 
-event Scope1EmissionPenaltyUpdated (uint256 totalCo2Emitted_in_kg,uint256 ThresholdCO2emission, bool PenaltyStatus);
+	event Scope1EmissionPenaltyUpdated (uint256 totalCo2Emitted_in_kg,uint256 ThresholdCO2emission, bool PenaltyStatus);
     
-    function updateScope1EmissionPenalty(uint256 ThresholdCO2emission) public {
+    	function updateScope1EmissionPenalty(uint256 ThresholdCO2emission) public {
         require (registrationContract.isEPA(msg.sender)==true,"only EPA can perform this.");
  
-    Penalty=false;
-        if(totalCo2Emitted_in_kg > ThresholdCO2emission)
-         {
-            Penalty=true;
-        }
-    emit Scope1EmissionPenaltyUpdated (totalCo2Emitted_in_kg, ThresholdCO2emission, Penalty);
-    }
+	    Penalty=false;
+	        if(totalCo2Emitted_in_kg > ThresholdCO2emission)
+	         {
+	            Penalty=true;
+	        }
+	    emit Scope1EmissionPenaltyUpdated (totalCo2Emitted_in_kg, ThresholdCO2emission, Penalty);
+	    }
 
 }
 
